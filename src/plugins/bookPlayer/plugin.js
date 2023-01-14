@@ -27,16 +27,14 @@ export class BookPlayer {
         } else {
             this.theme = 'light';
         }
-        this.themes = {
-            'dark': { 'body': { 'color': '#d8dadc', 'background': '#000', 'font-size': 'medium' } },
-            'sepia': { 'body': { 'color': '#d8a262', 'background': '#000', 'font-size': 'medium' } },
-            'light': { 'body': { 'color': '#000', 'background': '#fff', 'font-size': 'medium' } }
-        }
-        this.themeOrder = ['dark', 'sepia', 'light'];
-
         this.fontSize = 'medium';
         this.fontSizeOrder = ['x-small', 'small', 'medium', 'large', 'x-large'];
-
+        this.themes = {
+            'dark': { 'body': { 'color': '#d8dadc', 'background': '#000' } },
+            'sepia': { 'body': { 'color': '#d8a262', 'background': '#000' } },
+            'light': { 'body': { 'color': '#000', 'background': '#fff' } }
+        }
+        this.themeOrder = ['dark', 'sepia', 'light'];
         this.onDialogClosed = this.onDialogClosed.bind(this);
         this.openTableOfContents = this.openTableOfContents.bind(this);
         this.rotateTheme = this.rotateTheme.bind(this);
@@ -346,6 +344,11 @@ export class BookPlayer {
 
                 this.currentSrc = downloadHref;
                 this.rendition = rendition;
+
+                for (const theme of Object.keys(this.themes)) {
+                    rendition.themes.register(theme, this.themes[theme]);
+                }
+                rendition.themes.select(this.theme);
 
                 return rendition.display().then(() => {
                     const epubElem = document.querySelector('.epub-container');
