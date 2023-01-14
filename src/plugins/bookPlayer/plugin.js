@@ -22,9 +22,26 @@ export class BookPlayer {
         this.type = 'mediaplayer';
         this.id = 'bookplayer';
         this.priority = 1;
+        if (userSettings.theme(undefined) === 'dark' || userSettings.theme(undefined) === null) {
+            this.theme = 'dark';
+        } else {
+            this.theme = 'light';
+        }
+        this.themes = {
+            'dark': { 'body': { 'color': '#d8dadc', 'background': '#000', 'font-size': 'medium' } },
+            'sepia': { 'body': { 'color': '#d8a262', 'background': '#000', 'font-size': 'medium' } },
+            'light': { 'body': { 'color': '#000', 'background': '#fff', 'font-size': 'medium' } }
+        }
+        this.themeOrder = ['dark', 'sepia', 'light'];
+
+        this.fontSize = 'medium';
+        this.fontSizeOrder = ['x-small', 'small', 'medium', 'large', 'x-large'];
 
         this.onDialogClosed = this.onDialogClosed.bind(this);
         this.openTableOfContents = this.openTableOfContents.bind(this);
+        this.rotateTheme = this.rotateTheme.bind(this);
+        this.increaseFontSize = this.increaseFontSize.bind(this);
+        this.decreaseFontSize = this.decreaseFontSize.bind(this);
         this.previous = this.previous.bind(this);
         this.next = this.next.bind(this);
         this.onWindowKeyUp = this.onWindowKeyUp.bind(this);
@@ -163,6 +180,9 @@ export class BookPlayer {
         elem.querySelector('#btnBookplayerExit').addEventListener('click', this.onDialogClosed, { once: true });
         elem.querySelector('#btnBookplayerToc').addEventListener('click', this.openTableOfContents);
         elem.querySelector('#btnBookplayerFullscreen').addEventListener('click', this.toggleFullscreen);
+        elem.querySelector('#btnBookplayerRotateTheme').addEventListener('click', this.rotateTheme);
+        elem.querySelector('#btnBookplayerIncreaseFontSize').addEventListener('click', this.increaseFontSize);
+        elem.querySelector('#btnBookplayerDecreaseFontSize').addEventListener('click', this.decreaseFontSize);
         elem.querySelector('#btnBookplayerPrev')?.addEventListener('click', this.previous);
         elem.querySelector('#btnBookplayerNext')?.addEventListener('click', this.next);
     }
@@ -183,6 +203,9 @@ export class BookPlayer {
         elem.querySelector('#btnBookplayerExit').removeEventListener('click', this.onDialogClosed);
         elem.querySelector('#btnBookplayerToc').removeEventListener('click', this.openTableOfContents);
         elem.querySelector('#btnBookplayerFullscreen').removeEventListener('click', this.toggleFullscreen);
+        elem.querySelector('#btnBookplayerRotateTheme').removeEventListener('click', this.rotateTheme);
+        elem.querySelector('#btnBookplayerIncreaseFontSize').removeEventListener('click', this.increaseFontSize);
+        elem.querySelector('#btnBookplayerDecreaseFontSize').removeEventListener('click', this.decreaseFontSize);
         elem.querySelector('#btnBookplayerPrev')?.removeEventListener('click', this.previous);
         elem.querySelector('#btnBookplayerNext')?.removeEventListener('click', this.next);
     }
@@ -210,6 +233,35 @@ export class BookPlayer {
             icon.classList.remove(Screenfull.isFullscreen ? 'fullscreen_exit' : 'fullscreen');
             icon.classList.add(Screenfull.isFullscreen ? 'fullscreen' : 'fullscreen_exit');
             Screenfull.toggle();
+        }
+    }
+
+    rotateTheme() {
+        if (this.loaded) {
+            const newTheme = this.themeOrder[(this.themeOrder.indexOf(this.theme) + 1) % this.themeOrder.length];
+            this.rendition.themes.select(newTheme);
+            this.theme = newTheme;
+            console.dir(this.rendition);
+        }
+    }
+
+    increaseFontSize() {
+        if (this.loaded) {
+            if (this.fontSize !== this.fontSizeOrder[this.fontSizeOrder.length - 1]) {
+                const newFontSize = this.fontSizeOrder[(this.fontSizeOrder.indexOf(this.fontSize) + 1)];
+                this.rendition.themes.fontSize(newFontSize);
+                this.fontSize = newFontSize;
+            }
+        }
+    }
+
+    decreaseFontSize() {
+        if (this.loaded) {
+            if (this.fontSize !== this.fontSizeOrder[0]) {
+                const newFontSize = this.fontSizeOrder[(this.fontSizeOrder.indexOf(this.fontSize) - 1)];
+                this.rendition.themes.fontSize(newFontSize);
+                this.fontSize = newFontSize;
+            }
         }
     }
 
