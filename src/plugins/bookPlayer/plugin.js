@@ -22,11 +22,7 @@ export class BookPlayer {
         this.type = 'mediaplayer';
         this.id = 'bookplayer';
         this.priority = 1;
-        if (userSettings.theme(undefined) === 'dark' || userSettings.theme(undefined) === null) {
-            this.theme = 'dark';
-        } else {
-            this.theme = 'light';
-        }
+        this.theme = 'dark';
         this.fontSize = 'medium';
         this.fontSizeOrder = ['x-small', 'small', 'medium', 'large', 'x-large'];
         this.themes = {
